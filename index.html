@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPA Calculator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background-color: #4267B2;
+            padding: 15px;
+            color: white;
+            text-align: center;
+            font-size: 2em;
+            font-weight: bold;
+        }
+        .container {
+            width: 80%;
+            max-width: 800px; /* Adjusted to make it smaller */
+            margin: 30px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .card {
+            width: 100%;
+            max-width: 600px;
+            margin: 10px 0;
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 2em;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            font-weight: bold;
+            color: #555;
+        }
+        input, select {
+            width: 90%; /* Adjusted width to make the inputs smaller */
+            padding: 12px;
+            margin-top: 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+        input[type="number"]:invalid {
+            border-color: red;
+        }
+        input[type="number"]:valid {
+            border-color: green;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            font-size: 1em;
+            background-color: #1877f2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #165eab;
+        }
+        #downloadResult {
+            background-color: #42b72a;
+            margin-top: 10px;
+        }
+        #downloadResult:hover {
+            background-color: #36a420;
+        }
+        .results {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f7f7f7;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .results h2 {
+            color: #333;
+            font-size: 1.8em;
+        }
+        .results table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .results table th, .results table td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        .results table th {
+            background-color: #4267B2;
+            color: white;
+        }
+        .subject-card {
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #f5f6f7;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .subject-card .form-group {
+            margin-bottom: 10px;
+        }
+        .footer {
+            background-color: #4267B2;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-size: 1em;
+        }
+        @media (max-width: 768px) {
+            .container {
+                width: 90%;
+            }
+            input, select {
+                width: 100%; /* Full width on mobile */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        GPA Calculator
+    </div>
+
+    <div class="container">
+        <div class="content">
+            <h1>Calculate Your GPA</h1>
+            <p>Enter your subjects, credit hours, and scores to calculate your GPA.</p>
+
+            <form id="gpaForm">
+                <div id="subjectsContainer">
+                    <div class="subject-card" id="subject1">
+                        <h2>Subject 1</h2>
+                        <div class="form-group">
+                            <label for="subject1Name">Subject Name:</label>
+                            <input type="text" id="subject1Name" name="subjectName" placeholder="Enter subject name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="subject1Credits">Credit Hours (1-4):</label>
+                            <input type="number" id="subject1Credits" name="subjectCredits" min="1" max="4" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="subject1Score">Score (0-100):</label>
+                            <input type="number" id="subject1Score" name="subjectScore" min="0" max="100" required>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" id="addSubject">Add Another Subject</button>
+                <button type="submit" id="calculateGPA">Calculate GPA</button>
+                <button type="button" id="downloadResult" style="display: none;">Download Result</button>
+            </form>
+
+            <div id="results" class="results" style="display: none;">
+                <h2>Your Results</h2>
+                <div id="resultDetails"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>&copy; 2025 GPA Calculator - All Rights Reserved</p>
+    </div>
+
+    <script>
+        let subjectCount = 1;
+
+        document.getElementById('addSubject').addEventListener('click', () => {
+            subjectCount++;
+            const container = document.getElementById('subjectsContainer');
+            const subjectHTML = `
+                <div class="subject-card" id="subject${subjectCount}">
+                    <h2>Subject ${subjectCount}</h2>
+                    <div class="form-group">
+                        <label for="subject${subjectCount}Name">Subject Name:</label>
+                        <input type="text" id="subject${subjectCount}Name" name="subjectName" placeholder="Enter subject name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject${subjectCount}Credits">Credit Hours (1-4):</label>
+                        <input type="number" id="subject${subjectCount}Credits" name="subjectCredits" min="1" max="4" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject${subjectCount}Score">Score (0-100):</label>
+                        <input type="number" id="subject${subjectCount}Score" name="subjectScore" min="0" max="100" required>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', subjectHTML);
+        });
+
+        document.getElementById('gpaForm').addEventListener('submit', (event) => {
+            event.preventDefault();
+            const subjects = [];
+            for (let i = 1; i <= subjectCount; i++) {
+                const name = document.getElementById(`subject${i}Name`).value;
+                const credits = parseInt(document.getElementById(`subject${i}Credits`).value, 10);
+                const score = parseFloat(document.getElementById(`subject${i}Score`).value);
+
+                let grade = '';
+                let point = 0;
+                if (score >= 80) {
+                    grade = 'A';
+                    point = 4.0;
+                } else if (score >= 75) {
+                    grade = 'A-';
+                    point = 3.7;
+                } else if (score >= 70) {
+                    grade = 'B+';
+                    point = 3.3;
+                } else if (score >= 65) {
+                    grade = 'B';
+                    point = 3.0;
+                } else if (score >= 60) {
+                    grade = 'B-';
+                    point = 2.7;
+                } else if (score >= 55) {
+                    grade = 'C+';
+                    point = 2.3;
+                } else if (score >= 50) {
+                    grade = 'C';
+                    point = 2.0;
+                } else if (score >= 47) {
+                    grade = 'C-';
+                    point = 1.7;
+                } else if (score >= 44) {
+                    grade = 'D+';
+                    point = 1.3;
+                } else if (score >= 40) {
+                    grade = 'D';
+                    point = 1.0;
+                } else {
+                    grade = 'E';
+                    point = 0.0;
+                }
+
+                subjects.push({ name, credits, score, grade, point });
+            }
+
+            let totalCredits = 0;
+            let totalQualityPoints = 0;
+            subjects.forEach(subject => {
+                totalCredits += subject.credits;
+                totalQualityPoints += subject.point * subject.credits;
+            });
+
+            const gpa = totalQualityPoints / totalCredits;
+            document.getElementById('results').style.display = 'block';
+
+            let resultHTML = '<table><tr><th>Subject</th><th>Credits</th><th>Score</th><th>Grade</th><th>Point</th></tr>';
+            subjects.forEach(subject => {
+                resultHTML += `<tr><td>${subject.name}</td><td>${subject.credits}</td><td>${subject.score}</td><td>${subject.grade}</td><td>${subject.point.toFixed(2)}</td></tr>`;
+            });
+            resultHTML += '</table>';
+            resultHTML += `<p><strong>Total Credits:</strong> ${totalCredits}</p>`;
+            resultHTML += `<p><strong>GPA:</strong> ${gpa.toFixed(2)}</p>`;
+
+            document.getElementById('resultDetails').innerHTML = resultHTML;
+            document.getElementById('downloadResult').style.display = 'block';
+        });
+
+        document.getElementById('downloadResult').addEventListener('click', function() {
+            const element = document.createElement('a');
+            const content = document.getElementById('resultDetails').innerText;
+            const file = new Blob([content], { type: 'text/plain' });
+            element.href = URL.createObjectURL(file);
+            element.download = 'GPA_Result.txt';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        });
+    </script>
+</body>
+</html>
