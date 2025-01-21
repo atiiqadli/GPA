@@ -21,7 +21,7 @@
         }
         .container {
             width: 80%;
-            max-width: 800px; /* Adjusted to make it smaller */
+            max-width: 800px;
             margin: 30px auto;
             padding: 20px;
             background: white;
@@ -54,7 +54,7 @@
             color: #555;
         }
         input, select {
-            width: 90%; /* Adjusted width to make the inputs smaller */
+            width: 90%;
             padding: 12px;
             margin-top: 8px;
             border: 1px solid #ddd;
@@ -90,6 +90,12 @@
         }
         #downloadResult:hover {
             background-color: #36a420;
+        }
+        #loadResult {
+            background-color: #ff9800;
+        }
+        #loadResult:hover {
+            background-color: #e68a00;
         }
         .results {
             margin-top: 30px;
@@ -138,7 +144,7 @@
                 width: 90%;
             }
             input, select {
-                width: 100%; /* Full width on mobile */
+                width: 100%;
             }
         }
     </style>
@@ -177,8 +183,8 @@
                 <button type="button" id="addSubject">Add Another Subject</button>
                 <button type="submit" id="calculateGPA">Calculate GPA</button>
                 <button type="button" id="downloadResult" style="display: none;">Download Result</button>
+                <input type="file" id="loadFileInput" style="display: none;" accept=".txt">
                 <button type="button" id="loadResult">Load Result</button>
-                <input type="file" id="uploadResult" accept=".txt" style="display: none;">
             </form>
 
             <div id="results" class="results" style="display: none;">
@@ -300,21 +306,22 @@
             document.body.removeChild(element);
         });
 
-        // Trigger file upload dialog
         document.getElementById('loadResult').addEventListener('click', function() {
-            document.getElementById('uploadResult').click();
+            document.getElementById('loadFileInput').click();
         });
 
-        // Handle file upload and parse contents
-        document.getElementById('uploadResult').addEventListener('change', function(event) {
+        document.getElementById('loadFileInput').addEventListener('change', function(event) {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const content = e.target.result;
-                    const lines = content.split('\n');
-                    const subjectsContainer = document.getElementById('subjectsContainer');
-                    subjectsContainer.innerHTML = ''; // Clear existing subjects
-                    subjectCount = 0;
-
-                    lines.for
+                    document.getElementById('results').style.display = 'block';
+                    document.getElementById('resultDetails').innerText = content;
+                };
+                reader.readAsText(file);
+            }
+        });
+    </script>
+</body>
+</html>
