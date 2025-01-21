@@ -177,6 +177,8 @@
                 <button type="button" id="addSubject">Add Another Subject</button>
                 <button type="submit" id="calculateGPA">Calculate GPA</button>
                 <button type="button" id="downloadResult" style="display: none;">Download Result</button>
+                <button type="button" id="loadResult">Load Result</button>
+                <input type="file" id="uploadResult" accept=".txt" style="display: none;">
             </form>
 
             <div id="results" class="results" style="display: none;">
@@ -297,6 +299,22 @@
             element.click();
             document.body.removeChild(element);
         });
-    </script>
-</body>
-</html>
+
+        // Trigger file upload dialog
+        document.getElementById('loadResult').addEventListener('click', function() {
+            document.getElementById('uploadResult').click();
+        });
+
+        // Handle file upload and parse contents
+        document.getElementById('uploadResult').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const content = e.target.result;
+                    const lines = content.split('\n');
+                    const subjectsContainer = document.getElementById('subjectsContainer');
+                    subjectsContainer.innerHTML = ''; // Clear existing subjects
+                    subjectCount = 0;
+
+                    lines.for
