@@ -297,7 +297,10 @@
 
         document.getElementById('downloadResult').addEventListener('click', function() {
             const element = document.createElement('a');
-            const content = document.getElementById('resultDetails').innerText;
+            const content = `GPA Results:\n\n` + Array.from(document.querySelectorAll('#resultDetails table tr'))
+                .map(row => Array.from(row.children).map(cell => cell.innerText).join('\t')).join('\n') +
+                `\n\nTotal Credits: ${document.querySelector('#resultDetails p:nth-child(2)').innerText.split(': ')[1]}\n` +
+                `GPA: ${document.querySelector('#resultDetails p:nth-child(3)').innerText.split(': ')[1]}`;
             const file = new Blob([content], { type: 'text/plain' });
             element.href = URL.createObjectURL(file);
             element.download = 'GPA_Result.txt';
